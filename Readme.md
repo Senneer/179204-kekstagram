@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дмитрий Милов](https://up.htmlacademy.ru/javascript/14/user/179204).
-* Наставник: `Неизвестно`.
+* Наставник: `Данил Чекалин`.
 
 ---
 
