@@ -37,30 +37,33 @@ function pickRandomArrEl(array) {
   return array[EL_NUMBER];
 }
 
-function generatePictureUrl() {
-  var pictureNumber = PICTURES_QUANTITY ? PICTURES_QUANTITY-- : 0;
-  var url = 'photos/' + pictureNumber + '.jpg';
+function generatePictureUrl(id) {
+  var url = 'photos/' + id + '.jpg';
   return url;
 }
 
 function generateComments() {
   var comments = [];
   var commentsQuantity = getRandomInteger(1, 5);
+
   for (var i = 0; i < commentsQuantity; i++) {
     var comment = '';
     var commentSentences = getRandomInteger(1, 2);
+
     for (var j = 0; j < commentSentences; j++) {
       var sentence = pickRandomArrEl(COMMENTS);
       comment += sentence;
     }
+
     comments.push(comment);
   }
+
   return comments;
 }
 
-function generatePostData() {
+function generatePostData(url) {
   return {
-    url: generatePictureUrl(),
+    url,
     likes: getRandomInteger(15, 200),
     comments: generateComments(),
     description: pickRandomArrEl(DESCRIPTIONS)
@@ -91,22 +94,26 @@ function renderPost(postData) {
 
   var fragment = document.createDocumentFragment();
   var commentsList = postNode.querySelector('.social__comments');
+
   for (var i = 0; i < postData.comments.length; i++) {
     var commentNode = postNode.querySelector('.social__comment').cloneNode(true);
     commentNode.querySelector('.social__picture').src = 'img/avatar-' + getRandomInteger(1, 6) + '.svg';
     commentNode.querySelector('.social__text').textContent = postData.comments[i];
     fragment.appendChild(commentNode);
   }
+
   commentsList.innerHTML = '';
   commentsList.appendChild(fragment);
+
   post.parentNode.replaceChild(postNode, post);
 }
 
 function renderPreviews() {
   var fragment = document.createDocumentFragment();
 
-  while (PICTURES_QUANTITY > 0) {
-    var postData = generatePostData();
+  for (var i = 0; i < PICTURES_QUANTITY; i++) {
+    var url = generatePictureUrl(i + 1);
+    var postData = generatePostData(url);
     otherPeoplePictures.push(postData);
     var postPreviewNode = generatePreviewNode(postData);
     fragment.appendChild(postPreviewNode);
