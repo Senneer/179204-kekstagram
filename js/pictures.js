@@ -63,7 +63,7 @@ function generateComments() {
 
 function generatePostData(url) {
   return {
-    url,
+    url: url,
     likes: getRandomInteger(15, 200),
     comments: generateComments(),
     description: pickRandomArrEl(DESCRIPTIONS)
