@@ -1,5 +1,10 @@
 'use strict';
 
+var KEYCODES = {
+  enter: 13,
+  esc: 27
+};
+
 var PICTURES_QUANTITY = 25;
 
 var COMMENTS = [
@@ -94,6 +99,7 @@ function renderPost(postData) {
 
   var fragment = document.createDocumentFragment();
   var commentsList = postNode.querySelector('.social__comments');
+  var closeBtn = postNode.querySelector('.big-picture__cancel');
 
   for (var i = 0; i < postData.comments.length; i++) {
     var commentNode = postNode.querySelector('.social__comment').cloneNode(true);
@@ -104,6 +110,13 @@ function renderPost(postData) {
 
   commentsList.innerHTML = '';
   commentsList.appendChild(fragment);
+
+  closeBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    closeBigPicture();
+  });
+
+  document.addEventListener('keydown', bigPictureEscPressHandler);
 
   post.parentNode.replaceChild(postNode, post);
 }
@@ -116,16 +129,201 @@ function renderPreviews() {
     var postData = generatePostData(url);
     otherPeoplePictures.push(postData);
     var postPreviewNode = generatePreviewNode(postData);
+    addPreviewClickListener(postPreviewNode, postData);
     fragment.appendChild(postPreviewNode);
   }
 
   picturesList.appendChild(fragment);
 }
 
+function addPreviewClickListener(link, post) {
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    renderPost(post);
+  });
+}
+
+function closeBigPicture() {
+  var post = document.querySelector('.big-picture');
+  post.classList.add('hidden');
+  document.removeEventListener('keydown', bigPictureEscPressHandler);
+}
+
+function bigPictureEscPressHandler(e) {
+  if (e.keyCode === KEYCODES.esc) {
+    closeBigPicture();
+  }
+}
+
+// Редактирование
+var imgScaleValue = 100;
+
+var uploadFileInp = document.querySelector('#upload-file');
+var uploadCancelBtn = document.querySelector('.img-upload__cancel');
+var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+var imgScale = document.querySelector('.resize__control--value');
+var plusScaleBtn = document.querySelector('.resize__control--plus');
+var minusScaleBtn = document.querySelector('.resize__control--minus');
+var uploadPreview = document.querySelector('.img-upload__preview');
+
+function popupEscPressHandler(e) {
+  if (e.keyCode === KEYCODES.esc) {
+    closeImgUpload();
+  }
+}
+
+function setImgScaleValue() {
+  imgScale.value = imgScaleValue + '%';
+  uploadPreview.style.transform = 'scale(' + imgScaleValue / 100 + ')';
+}
+
+function openImgUpload() {
+  imgUploadOverlay.classList.remove('hidden');
+  document.addEventListener('keydown', popupEscPressHandler);
+  setImgScaleValue();
+}
+
+function closeImgUpload() {
+  uploadFileInp.value = '';
+  imgUploadOverlay.classList.add('hidden');
+  document.removeEventListener('keydown', popupEscPressHandler);
+}
+
+function increaseImgScaleHandler(e) {
+  e.preventDefault();
+  if (imgScaleValue < 100) {
+    imgScaleValue += 25;
+    setImgScaleValue();
+  }
+}
+
+function decreaseImgScaleHandler(e) {
+  e.preventDefault();
+  if (imgScaleValue > 0) {
+    imgScaleValue -= 25;
+    setImgScaleValue();
+  }
+}
+
+uploadFileInp.addEventListener('change', function () {
+  var checkedInpEffect = document.querySelector('.effects__radio:checked');
+
+  currentEffect = checkedInpEffect.value;
+  openImgUpload();
+  setDefaultEffectValues();
+});
+uploadCancelBtn.addEventListener('click', function () {
+  closeImgUpload();
+});
+
+plusScaleBtn.addEventListener('click', increaseImgScaleHandler);
+minusScaleBtn.addEventListener('click', decreaseImgScaleHandler);
+
+var imgEffectInputs = document.querySelectorAll('.effects__radio');
+var effectScaleWrapper = document.querySelector('.img-upload__scale');
+var previewUploadImg = uploadPreview.querySelector('img');
+var currentEffect = 'none';
+
+function changeImgEffect(effect) {
+  previewUploadImg.className = '';
+  previewUploadImg.classList.add('effects__preview--' + effect);
+}
+
+for (var i = 0; i < imgEffectInputs.length; i++) {
+  imgEffectInputs[i].addEventListener('change', function (e) {
+    currentEffect = e.target.value;
+
+    setDefaultEffectValues();
+  });
+}
+
+// Наложение эффектов
+var EFFECT_VALUES = {
+  chrome: {
+    filter: 'grayscale',
+    min: 0,
+    max: 1,
+    unit: ''
+  },
+  sepia: {
+    filter: 'sepia',
+    min: 0,
+    max: 1,
+    unit: ''
+  },
+  marvin: {
+    filter: 'invert',
+    min: 0,
+    max: 100,
+    unit: '%'
+  },
+  phobos: {
+    filter: 'blur',
+    min: 0,
+    max: 3,
+    unit: 'px'
+  },
+  heat: {
+    filter: 'brightness',
+    min: 1,
+    max: 3,
+    unit: ''
+  }
+};
+
+var effectScaleLine = document.querySelector('.scale__line');
+var effectScalePin = effectScaleLine.querySelector('.scale__pin');
+var effectScaleLevel = effectScaleLine.querySelector('.scale__level');
+var effectValueInp = document.querySelector('.scale__value');
+
+function moveEfectScale(val) {
+  effectScalePin.style.left = val + '%';
+  effectScaleLevel.style.width = val + '%';
+}
+
+function setDefaultEffectValues() {
+  var maxPerc = 100;
+
+  if (currentEffect === 'none') {
+    previewUploadImg.style.filter = 'none';
+    effectScaleWrapper.classList.add('hidden');
+  } else {
+    effectScaleWrapper.classList.remove('hidden');
+    applyEffect(maxPerc);
+  }
+
+  moveEfectScale(maxPerc);
+  changeImgEffect(currentEffect);
+}
+
+function getValueInPercent(val, max) {
+  return val * 100 / max;
+}
+
+function getEffectCssValue(currentPerc) {
+  var effectObj = EFFECT_VALUES[currentEffect];
+  var val = currentPerc / 100 * effectObj.max + (1 - currentPerc / 100) * effectObj.min; // немножко уличной магии
+  return effectObj.filter + '(' + val + effectObj.unit + ')';
+}
+
+function getEffectPercent() {
+  var effectPinOffsetLeft = effectScalePin.offsetLeft;
+  var effectLineWidth = effectScaleLine.offsetWidth;
+  return Math.ceil(getValueInPercent(effectPinOffsetLeft, effectLineWidth));
+}
+
+function applyEffect(effectAmountPerc) {
+  previewUploadImg.style.filter = getEffectCssValue(effectAmountPerc);
+  effectValueInp.value = effectAmountPerc;
+}
+
+effectScalePin.addEventListener('mouseup', function () {
+  var effectAmount = getEffectPercent();
+  applyEffect(effectAmount);
+});
+
 function init() {
   renderPreviews();
-  var post = otherPeoplePictures[0];
-  renderPost(post);
 }
 
 init();
