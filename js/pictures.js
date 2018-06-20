@@ -322,6 +322,71 @@ effectScalePin.addEventListener('mouseup', function () {
   applyEffect(effectAmount);
 });
 
+// Валидация
+
+var imgUploadForm = document.querySelector('.img-upload__form');
+var submitBtn = imgUploadForm.querySelector('.img-upload__submit');
+var hashtagInp = imgUploadForm.querySelector('.text__hashtags');
+var commentInp = imgUploadForm.querySelector('.text__description');
+
+function hasSameArrValues(arr) {
+  for (var i = 0; i < arr.length - 1; i++) {
+    for (var j = i + 1; j < arr.length; j++) {
+      return arr[i].toLowerCase() === arr[j].toLowerCase();
+    }
+  }
+}
+
+function hasExtraSymbol(hashtag) {
+  for (var i = 1; i < hashtag.length; i++) {
+    if (hashtag.charAt(i) === '#') {
+      return true;
+    }
+  }
+  return false;
+}
+
+function validateHashtags() {
+  var hashtagArr = hashtagInp.value.trim().split(' ');
+
+  for (var i = 0; i < hashtagArr.length; i++) {
+    if (hashtagArr[i].charAt(0) !== '#') {
+      hashtagInp.setCustomValidity('Хэштег должен начинаться с символа "#"');
+    } else if (hashtagArr[i].length === 1) {
+      hashtagInp.setCustomValidity('Хэштег должен содержать текст');
+    } else if (hasExtraSymbol(hashtagArr[i])) {
+      hashtagInp.setCustomValidity('Хэштеги должны разделяться пробелом');
+    } else if (hashtagArr[i].length > 20) {
+      hashtagInp.setCustomValidity('Длина хэштегов не должна превышать 20-и символов');
+    } else if (hashtagArr.length > 5) {
+      hashtagInp.setCustomValidity('Нельзя использовать больше 5-и хэштегов');
+    } else if (hasSameArrValues(hashtagArr)) {
+      hashtagInp.setCustomValidity('Хэштеги не должны повторяться');
+    } else {
+      hashtagInp.setCustomValidity('');
+    }
+  }
+}
+
+function hashtagChangeHandler() {
+  hashtagInp.setCustomValidity('');
+}
+
+function imgSubmitHandler(e) {
+  validateHashtags();
+  if (!imgUploadForm.checkValidity()) {
+    e.preventDefault();
+    imgUploadForm.reportValidity();
+  }
+}
+
+commentInp.addEventListener('invalid', function (e) {
+  console.log(e);
+});
+
+hashtagInp.addEventListener('input', hashtagChangeHandler);
+imgUploadForm.addEventListener('submit', imgSubmitHandler);
+
 function init() {
   renderPreviews();
 }
