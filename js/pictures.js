@@ -191,7 +191,9 @@ function closeImgUpload() {
 
 function increaseImgScaleHandler(e) {
   e.preventDefault();
-  if (imgScaleValue < 100) {
+  var MAX_SCALE = 100;
+
+  if (imgScaleValue < MAX_SCALE) {
     imgScaleValue += 25;
     setImgScaleValue();
   }
@@ -199,7 +201,9 @@ function increaseImgScaleHandler(e) {
 
 function decreaseImgScaleHandler(e) {
   e.preventDefault();
-  if (imgScaleValue > 0) {
+  var MIN_SCALE = 25;
+
+  if (imgScaleValue > MIN_SCALE) {
     imgScaleValue -= 25;
     setImgScaleValue();
   }
@@ -333,8 +337,9 @@ function hasUniqueVals(arr) {
   var unique = true;
 
   arr.forEach(function (el) {
-    if (!obj[el]) {
-      obj[el] = true;
+    var str = el.toLowerCase();
+    if (!obj[str]) {
+      obj[str] = true;
     } else {
       unique = false;
     }
@@ -355,21 +360,29 @@ function hasExtraSymbol(hashtag) {
 function validateHashtags() {
   var hashtagArr = hashtagInp.value.trim().split(' ');
 
-  for (var j = 0; j < hashtagArr.length; j++) {
-    if (hashtagArr[j].charAt(0) !== '#') {
-      hashtagInp.setCustomValidity('Хэштег должен начинаться с символа "#"');
-    } else if (hashtagArr[j].length === 1) {
-      hashtagInp.setCustomValidity('Хэштег должен содержать текст');
-    } else if (hasExtraSymbol(hashtagArr[j])) {
-      hashtagInp.setCustomValidity('Хэштеги должны разделяться пробелом');
-    } else if (hashtagArr[j].length > 20) {
-      hashtagInp.setCustomValidity('Длина хэштегов не должна превышать 20-и символов');
-    } else if (hashtagArr.length > 5) {
-      hashtagInp.setCustomValidity('Нельзя использовать больше 5-и хэштегов');
-    } else if (!hasUniqueVals(hashtagArr)) {
-      hashtagInp.setCustomValidity('Хэштеги не должны повторяться');
-    } else {
-      hashtagInp.setCustomValidity('');
+  if (hashtagArr[0].length > 0) {
+    for (var j = 0; j < hashtagArr.length; j++) {
+      if (hashtagArr[j].charAt(0) !== '#') {
+        hashtagInp.setCustomValidity('Хэштег должен начинаться с символа "#"');
+        break;
+      } else if (hashtagArr[j].length === 1) {
+        hashtagInp.setCustomValidity('Хэштег должен содержать текст');
+        break;
+      } else if (hasExtraSymbol(hashtagArr[j])) {
+        hashtagInp.setCustomValidity('Хэштеги должны разделяться пробелом');
+        break;
+      } else if (hashtagArr[j].length > 20) {
+        hashtagInp.setCustomValidity('Длина хэштегов не должна превышать 20-и символов');
+        break;
+      } else if (hashtagArr.length > 5) {
+        hashtagInp.setCustomValidity('Нельзя использовать больше 5-и хэштегов');
+        break;
+      } else if (!hasUniqueVals(hashtagArr)) {
+        hashtagInp.setCustomValidity('Хэштеги не должны повторяться');
+        break;
+      } else {
+        hashtagInp.setCustomValidity('');
+      }
     }
   }
 }
