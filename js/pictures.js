@@ -317,9 +317,45 @@ function applyEffect(effectAmountPerc) {
   effectValueInp.value = effectAmountPerc;
 }
 
-effectScalePin.addEventListener('mouseup', function () {
-  var effectAmount = getEffectPercent();
-  applyEffect(effectAmount);
+effectScalePin.addEventListener('mousedown', function (e) {
+  e.preventDefault();
+
+  var xCoord = e.clientX;
+  var dragged = false;
+
+  var mouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+
+    var shift = xCoord - moveEvt.clientX;
+
+    xCoord = moveEvt.clientX;
+
+    var move = effectScalePin.offsetLeft - shift;
+    effectScalePin.style.left = move + 'px';
+    moveEfectScale(move);
+  };
+
+  var mouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+
+    var effectAmount = getEffectPercent();
+    applyEffect(effectAmount);
+
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+
+    if (dragged) {
+      var clickPreventDefaultHandler = function (clickEvt) {
+        clickEvt.preventDefault();
+        effectScalePin.removeEventListener('click', clickPreventDefaultHandler);
+      };
+      effectScalePin.addEventListener('click', clickPreventDefaultHandler);
+    }
+  };
+
+  document.addEventListener('mousemove', mouseMoveHandler);
+  document.addEventListener('mouseup', mouseUpHandler);
 });
 
 // Валидация
