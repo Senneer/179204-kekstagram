@@ -300,67 +300,16 @@ function setDefaultEffectValues() {
   changeImgEffect(currentEffect);
 }
 
-function getValueInPercent(val, max) {
-  return val * 100 / max;
-}
-
 function getEffectCssValue(currentPerc) {
   var effectObj = EFFECT_VALUES[currentEffect];
   var val = currentPerc / 100 * effectObj.max + (1 - currentPerc / 100) * effectObj.min; // немножко уличной магии
   return effectObj.filter + '(' + val + effectObj.unit + ')';
 }
 
-function getEffectPercent() {
-  var effectPinOffsetLeft = effectScalePin.offsetLeft;
-  var effectLineWidth = effectScaleLine.offsetWidth;
-  return Math.ceil(getValueInPercent(effectPinOffsetLeft, effectLineWidth));
-}
-
 function applyEffect(effectAmountPerc) {
   previewUploadImg.style.filter = getEffectCssValue(effectAmountPerc);
   effectValueInp.value = effectAmountPerc;
 }
-
-effectScalePin.addEventListener('mousedown', function (e) {
-  e.preventDefault();
-
-  var xCoord = e.clientX;
-  var dragged = false;
-
-  var mouseMoveHandler = function (moveEvt) {
-    moveEvt.preventDefault();
-    dragged = true;
-
-    var shift = xCoord - moveEvt.clientX;
-
-    xCoord = moveEvt.clientX;
-
-    var move = effectScalePin.offsetLeft - shift;
-    effectScalePin.style.left = move + 'px';
-    moveEfectScale(move);
-  };
-
-  var mouseUpHandler = function (upEvt) {
-    upEvt.preventDefault();
-
-    var effectAmount = getEffectPercent();
-    applyEffect(effectAmount);
-
-    document.removeEventListener('mousemove', mouseMoveHandler);
-    document.removeEventListener('mouseup', mouseUpHandler);
-
-    if (dragged) {
-      var clickPreventDefaultHandler = function (clickEvt) {
-        clickEvt.preventDefault();
-        effectScalePin.removeEventListener('click', clickPreventDefaultHandler);
-      };
-      effectScalePin.addEventListener('click', clickPreventDefaultHandler);
-    }
-  };
-
-  document.addEventListener('mousemove', mouseMoveHandler);
-  document.addEventListener('mouseup', mouseUpHandler);
-});
 
 // Валидация
 
@@ -384,8 +333,8 @@ function validateHashtags() {
 
   if (hashtagArr[0].length > 0) {
     for (var j = 0; j < hashtagArr.length; j++) {
-      var nonUnique = hashtagArr.some(function (el) {
-        return el.toLowerCase() === hashtagArr[j].toLowerCase();
+      var nonUnique = hashtagArr.some(function (el, index) {
+        return index !== j ? el.toLowerCase() === hashtagArr[j].toLowerCase() : false;
       });
 
       if (hashtagArr[j].charAt(0) !== '#') {
