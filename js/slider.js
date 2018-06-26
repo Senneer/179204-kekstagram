@@ -21,11 +21,9 @@
 
     var xCoord = e.clientX;
     var LINE_WIDTH = effectScaleLine.offsetWidth;
-    var dragged = false;
 
     var mouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
-      dragged = true;
 
       var shift = xCoord - moveEvt.clientX;
 
@@ -45,14 +43,6 @@
 
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
-
-      if (dragged) {
-        var clickPreventDefaultHandler = function (clickEvt) {
-          clickEvt.preventDefault();
-          effectScalePin.removeEventListener('click', clickPreventDefaultHandler);
-        };
-        effectScalePin.addEventListener('click', clickPreventDefaultHandler);
-      }
     };
 
     document.addEventListener('mousemove', mouseMoveHandler);
