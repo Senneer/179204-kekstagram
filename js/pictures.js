@@ -300,20 +300,10 @@ function setDefaultEffectValues() {
   changeImgEffect(currentEffect);
 }
 
-function getValueInPercent(val, max) {
-  return val * 100 / max;
-}
-
 function getEffectCssValue(currentPerc) {
   var effectObj = EFFECT_VALUES[currentEffect];
   var val = currentPerc / 100 * effectObj.max + (1 - currentPerc / 100) * effectObj.min; // немножко уличной магии
   return effectObj.filter + '(' + val + effectObj.unit + ')';
-}
-
-function getEffectPercent() {
-  var effectPinOffsetLeft = effectScalePin.offsetLeft;
-  var effectLineWidth = effectScaleLine.offsetWidth;
-  return Math.ceil(getValueInPercent(effectPinOffsetLeft, effectLineWidth));
 }
 
 function applyEffect(effectAmountPerc) {
@@ -321,32 +311,11 @@ function applyEffect(effectAmountPerc) {
   effectValueInp.value = effectAmountPerc;
 }
 
-effectScalePin.addEventListener('mouseup', function () {
-  var effectAmount = getEffectPercent();
-  applyEffect(effectAmount);
-});
-
 // Валидация
 
 var imgUploadForm = document.querySelector('.img-upload__form');
 var hashtagInp = imgUploadForm.querySelector('.text__hashtags');
 var commentInp = imgUploadForm.querySelector('.text__description');
-
-function hasUniqueVals(arr) {
-  var obj = {};
-  var unique = true;
-
-  arr.forEach(function (el) {
-    var str = el.toLowerCase();
-    if (!obj[str]) {
-      obj[str] = true;
-    } else {
-      unique = false;
-    }
-  });
-
-  return unique;
-}
 
 function hasExtraSymbol(hashtag) {
   for (var k = 1; k < hashtag.length; k++) {
@@ -358,10 +327,16 @@ function hasExtraSymbol(hashtag) {
 }
 
 function validateHashtags() {
+  var HASHTAG_LENGTH = 20;
+  var HASHTAG_AMOUNT = 5;
   var hashtagArr = hashtagInp.value.trim().split(' ');
 
   if (hashtagArr[0].length > 0) {
     for (var j = 0; j < hashtagArr.length; j++) {
+      var nonUnique = hashtagArr.some(function (el, index) {
+        return index !== j ? el.toLowerCase() === hashtagArr[j].toLowerCase() : false;
+      });
+
       if (hashtagArr[j].charAt(0) !== '#') {
         hashtagInp.setCustomValidity('Хэштег должен начинаться с символа "#"');
         break;
@@ -371,13 +346,13 @@ function validateHashtags() {
       } else if (hasExtraSymbol(hashtagArr[j])) {
         hashtagInp.setCustomValidity('Хэштеги должны разделяться пробелом');
         break;
-      } else if (hashtagArr[j].length > 20) {
+      } else if (hashtagArr[j].length > HASHTAG_LENGTH) {
         hashtagInp.setCustomValidity('Длина хэштегов не должна превышать 20-и символов');
         break;
-      } else if (hashtagArr.length > 5) {
+      } else if (hashtagArr.length > HASHTAG_AMOUNT) {
         hashtagInp.setCustomValidity('Нельзя использовать больше 5-и хэштегов');
         break;
-      } else if (!hasUniqueVals(hashtagArr)) {
+      } else if (nonUnique) {
         hashtagInp.setCustomValidity('Хэштеги не должны повторяться');
         break;
       } else {
