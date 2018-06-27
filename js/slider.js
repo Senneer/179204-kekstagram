@@ -5,6 +5,9 @@
   var effectScaleLine = scaleWrapper.querySelector('.scale__line');
   var effectScalePin = scaleWrapper.querySelector('.scale__pin');
   var effectScaleLevel = scaleWrapper.querySelector('.scale__level');
+  var effectValueInp = document.querySelector('.scale__value');
+
+  var DEFAULT_VALUE = 100;
 
   function getValueInPercent(val, max) {
     return val * 100 / max;
@@ -16,46 +19,54 @@
     return Math.ceil(getValueInPercent(effectPinOffsetLeft, effectMaxVal));
   }
 
-  effectScalePin.addEventListener('mousedown', function (e) {
-    e.preventDefault();
+  function resetSlider() {
+    effectValueInp.value = DEFAULT_VALUE;
+    effectScalePin.style.left = DEFAULT_VALUE + '%';
+    effectScaleLevel.style.width = DEFAULT_VALUE + '%';
+  }
 
-    var xCoord = e.clientX;
-    var LINE_WIDTH = effectScaleLine.offsetWidth;
-    var dragged = false;
+  function initSlider(callback) {
+    effectScalePin.addEventListener('mousedown', function (e) {
+      e.preventDefault();
 
-    var mouseMoveHandler = function (moveEvt) {
-      moveEvt.preventDefault();
-      dragged = true;
+      var xCoord = e.clientX;
+      var LINE_WIDTH = effectScaleLine.offsetWidth;
 
-      var shift = xCoord - moveEvt.clientX;
+      var mouseMoveHandler = function (moveEvt) {
+        moveEvt.preventDefault();
 
-      xCoord = moveEvt.clientX;
+        var shift = xCoord - moveEvt.clientX;
 
-      var move = effectScalePin.offsetLeft - shift;
-      if (move >= 0 && move <= LINE_WIDTH) {
-        effectScalePin.style.left = move + 'px';
-        effectScaleLevel.style.width = move + 'px';
-        var effectPerc = getEffectPercent();
-        window.applyEffect(effectPerc);
-      }
-    };
+        xCoord = moveEvt.clientX;
 
-    var mouseUpHandler = function (upEvt) {
-      upEvt.preventDefault();
+        var move = effectScalePin.offsetLeft - shift;
+        if (move >= 0 && move <= LINE_WIDTH) {
+          effectScalePin.style.left = move + 'px';
+          effectScaleLevel.style.width = move + 'px';
+          var effectPerc = getEffectPercent();
+          effectValueInp.value = effectPerc;
+          callback();
+          // window.effect.apply(effectPerc);
+        }
+      };
 
-      document.removeEventListener('mousemove', mouseMoveHandler);
-      document.removeEventListener('mouseup', mouseUpHandler);
+      var mouseUpHandler = function (upEvt) {
+        upEvt.preventDefault();
 
-      if (dragged) {
-        var clickPreventDefaultHandler = function (clickEvt) {
-          clickEvt.preventDefault();
-          effectScalePin.removeEventListener('click', clickPreventDefaultHandler);
-        };
-        effectScalePin.addEventListener('click', clickPreventDefaultHandler);
-      }
-    };
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+      };
 
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
-  });
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+    });
+  }
+
+  window.slider = {
+    value: function () {
+      return effectValueInp.value;
+    },
+    reset: resetSlider,
+    init: initSlider
+  };
 })();

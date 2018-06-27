@@ -12,6 +12,25 @@
     return url;
   }
 
+  function generateComments() {
+    var comments = [];
+    var commentsQuantity = window.assets.getRandomInteger(1, 5);
+
+    for (var i = 0; i < commentsQuantity; i++) {
+      var comment = '';
+      var commentSentences = window.assets.getRandomInteger(1, 2);
+
+      for (var j = 0; j < commentSentences; j++) {
+        var sentence = window.assets.pickRandomArrEl(window.data.COMMENTS);
+        comment += sentence;
+      }
+
+      comments.push(comment);
+    }
+
+    return comments;
+  }
+
   function generatePreviewNode(obj) {
     var pictureElement = pictureTemplate.cloneNode(true);
 
@@ -52,5 +71,5 @@
     }
 
     picturesList.appendChild(fragment);
-  }
+  };
 })();

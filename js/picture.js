@@ -2,25 +2,6 @@
 
 (function () {
 
-  function generateComments() {
-    var comments = [];
-    var commentsQuantity = window.assets.getRandomInteger(1, 5);
-
-    for (var i = 0; i < commentsQuantity; i++) {
-      var comment = '';
-      var commentSentences = window.assets.getRandomInteger(1, 2);
-
-      for (var j = 0; j < commentSentences; j++) {
-        var sentence = window.assets.pickRandomArrEl(window.data.COMMENTS);
-        comment += sentence;
-      }
-
-      comments.push(comment);
-    }
-
-    return comments;
-  }
-
   function renderPost(postData) {
     var post = document.querySelector('.big-picture');
     var postNode = post.cloneNode(true);
@@ -63,9 +44,7 @@
   }
 
   function bigPictureEscPressHandler(e) {
-    if (e.keyCode === window.KEYCODES.esc) {
-      closeBigPicture();
-    }
+    window.assets.isEscEvent(e, closeBigPicture);
   }
 
   window.renderPost = renderPost;

@@ -13,7 +13,14 @@
     return array[EL_NUMBER];
   }
 
+  function isEscEvent(e, callback) {
+    if (e.keyCode === window.Keycode.ESC) {
+      callback();
+    }
+  }
+
   window.assets = {
+    isEscEvent: isEscEvent,
     getRandomInteger: getRandomInteger,
     pickRandomArrEl: pickRandomArrEl
   };
