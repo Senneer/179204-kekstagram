@@ -3,6 +3,7 @@
 (function () {
   var MIN_SCALE = 25;
   var MAX_SCALE = 100;
+  var SCALE_STEP = 25;
 
   var imgScaleInp = document.querySelector('.resize__control--value');
 
@@ -14,7 +15,7 @@
     var imgScale = makeNumber(imgScaleInp.value);
 
     if (imgScale < MAX_SCALE) {
-      imgScale += 25;
+      imgScale += SCALE_STEP;
       setScale(imgScale);
       if (typeof callback === 'function') {
         callback();
@@ -26,7 +27,7 @@
     var imgScale = makeNumber(imgScaleInp.value);
 
     if (imgScale > MIN_SCALE) {
-      imgScale -= 25;
+      imgScale -= SCALE_STEP;
       setScale(imgScale);
       if (typeof callback === 'function') {
         callback();
@@ -39,7 +40,7 @@
   }
 
   window.scale = {
-    set: setScale,
+    setState: setScale,
     decrease: decreaseImgScale,
     increase: increaseImgScale
   };

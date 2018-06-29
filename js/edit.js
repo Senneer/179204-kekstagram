@@ -11,6 +11,8 @@
   var previewUploadImg = uploadPreview.querySelector('img');
   var imgEffectInputs = document.querySelectorAll('.effects__radio');
   var effectScaleWrapper = document.querySelector('.img-upload__scale');
+  var hashtagInp = document.querySelector('.text__hashtags');
+  var commentInp = document.querySelector('.text__description');
 
   imgEffectInputs.forEach(function (input) {
     input.addEventListener('change', function () {
@@ -38,9 +40,14 @@
   }
 
   function applyEffect() {
-    var val = window.slider.value();
+    var val = window.slider.getState();
     previewUploadImg.style.filter = window.effect.cssProp(val);
     window.effect.changeImgClass(previewUploadImg);
+  }
+
+  function clearTextfields() {
+    hashtagInp.value = '';
+    commentInp.value = '';
   }
 
   function openImgUpload() {
@@ -48,7 +55,7 @@
 
     imgUploadOverlay.classList.remove('hidden');
     document.addEventListener('keydown', escPressHandler);
-    window.scale.set(DEFAULT_SCALE);
+    window.scale.setState(DEFAULT_SCALE);
     setImgScaleValue();
     window.slider.reset();
     window.slider.init(applyEffect);
@@ -58,6 +65,7 @@
   function closeImgUpload() {
     uploadFileInp.value = '';
     imgUploadOverlay.classList.add('hidden');
+    clearTextfields()
     document.removeEventListener('keydown', escPressHandler);
   }
 

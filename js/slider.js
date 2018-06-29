@@ -63,7 +63,7 @@
   }
 
   window.slider = {
-    value: function () {
+    getState: function () {
       return effectValueInp.value;
     },
     reset: resetSlider,
