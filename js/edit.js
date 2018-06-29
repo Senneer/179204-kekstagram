@@ -65,7 +65,7 @@
   function closeImgUpload() {
     uploadFileInp.value = '';
     imgUploadOverlay.classList.add('hidden');
-    clearTextfields()
+    clearTextfields();
     document.removeEventListener('keydown', escPressHandler);
   }
 
