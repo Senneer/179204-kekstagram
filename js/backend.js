@@ -4,7 +4,7 @@
 
   var Url = {
     UPLOAD_IMG: 'https://js.dump.academy/kekstagram',
-    WIZARD_LIST: 'https://js.dump.academy/kekstagram/data'
+    GALLERY_IMGS: 'https://js.dump.academy/kekstagram/data'
   };
 
   function errorHandler(onError) {
@@ -34,7 +34,7 @@
     }, TIME_TO_SHOW);
   }
 
-  function load(onLoad, onError) {
+  function request(onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -56,31 +56,18 @@
 
     xhr.timeout = 10000;
 
-    xhr.open('GET', Url.WIZARD_LIST);
+    return xhr;
+  }
+
+  function load(onLoad, onError) {
+    var xhr = request(onLoad, onError);
+
+    xhr.open('GET', Url.GALLERY_IMGS);
     xhr.send();
   }
 
   function upload(data, onLoad, onError) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onLoad(xhr.response);
-      } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      }
-    });
-
-    xhr.addEventListener('error', function () {
-      errorHandler(onError);
-    });
-
-    xhr.addEventListener('timeout', function () {
-      timeoutHandler(onError, xhr.timeout);
-    });
-
-    xhr.timeout = 10000;
+    var xhr = request(onLoad, onError);
 
     xhr.open('POST', Url.UPLOAD_IMG);
     xhr.send(data);
