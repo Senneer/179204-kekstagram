@@ -13,6 +13,7 @@
   var effectScaleWrapper = document.querySelector('.img-upload__scale');
   var hashtagInp = document.querySelector('.text__hashtags');
   var commentInp = document.querySelector('.text__description');
+  var form = document.querySelector('.img-upload__form');
 
   imgEffectInputs.forEach(function (input) {
     input.addEventListener('change', function () {
@@ -50,22 +51,28 @@
     commentInp.value = '';
   }
 
-  function openImgUpload() {
+  function setDefaultFormVals() {
     var DEFAULT_SCALE = 100;
 
-    imgUploadOverlay.classList.remove('hidden');
-    document.addEventListener('keydown', escPressHandler);
+    clearTextfields();
+    window.slider.reset();
     window.scale.setState(DEFAULT_SCALE);
     setImgScaleValue();
-    window.slider.reset();
+    imgEffectInputs[imgEffectInputs.length - 1].checked = true;
+  }
+
+  function openImgUpload() {
+    imgUploadOverlay.classList.remove('hidden');
+    document.addEventListener('keydown', escPressHandler);
+    setDefaultFormVals();
     window.slider.init(applyEffect);
     applyEffect();
   }
 
   function closeImgUpload() {
     uploadFileInp.value = '';
+    setDefaultFormVals();
     imgUploadOverlay.classList.add('hidden');
-    clearTextfields();
     document.removeEventListener('keydown', escPressHandler);
   }
 
@@ -85,5 +92,12 @@
   minusScaleBtn.addEventListener('click', function (e) {
     e.preventDefault();
     window.scale.decrease(setImgScaleValue);
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = new FormData(form);
+
+    window.backend.upload(data, closeImgUpload, window.backend.showError);
   });
 })();

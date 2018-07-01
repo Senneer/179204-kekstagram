@@ -1,8 +1,9 @@
 'use strict';
 
 (function () {
+
   function init() {
-    window.renderPreviews();
+    window.backend.load(window.renderPreviews, window.backend.showError);
   }
 
   init();
