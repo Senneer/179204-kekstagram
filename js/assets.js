@@ -19,9 +19,24 @@
     }
   }
 
+  function debounce(foo, interval) {
+    var lastTimeout = null;
+
+    return function () {
+      var args = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        foo.apply(null, args);
+      }, interval);
+    };
+  }
+
   window.assets = {
     isEscEvent: isEscEvent,
     getRandomInteger: getRandomInteger,
-    pickRandomArrEl: pickRandomArrEl
+    pickRandomArrEl: pickRandomArrEl,
+    debounce: debounce
   };
 })();

@@ -24,8 +24,17 @@
     });
   }
 
-  window.renderPreviews = function (previewList) {
+  function removePrevPreviews() {
+    var prevImgList = document.querySelectorAll('.picture__link');
+
+    [].forEach.call(prevImgList, function (el) {
+      el.remove();
+    });
+  }
+
+  function renderPreviews(previewList) {
     var fragment = document.createDocumentFragment();
+    window.previews.list = previewList;
 
     previewList.forEach(function (el) {
       var postPreviewNode = generatePreviewNode(el);
@@ -34,6 +43,13 @@
       fragment.appendChild(postPreviewNode);
     });
 
+    removePrevPreviews();
     picturesList.appendChild(fragment);
+    window.filter.init(window.previews.list, window.previews.render);
+  }
+
+  window.previews = {
+    render: renderPreviews,
+    list: []
   };
 })();

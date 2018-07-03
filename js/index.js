@@ -3,7 +3,7 @@
 (function () {
 
   function init() {
-    window.backend.load(window.renderPreviews, window.backend.showError);
+    window.backend.load(window.previews.render, window.backend.showError);
   }
 
   init();
