@@ -48,7 +48,7 @@
     postNode.querySelector('.comments-count').textContent = postData.comments.length;
     postNode.querySelector('.social__caption').textContent = postData.description;
     postNode.querySelector('.social__loadmore').classList.remove('visually-hidden');
- 
+
     loadedCommentsNum = 0;
     var commentsArr = postData.comments.slice(0, COMMENTS_TO_LOAD);
 
