@@ -15,6 +15,8 @@
   var commentInp = document.querySelector('.text__description');
   var form = document.querySelector('.img-upload__form');
 
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
   imgEffectInputs.forEach(function (input) {
     input.addEventListener('change', function () {
       var currentEffect = window.effect.current();
@@ -77,6 +79,22 @@
   }
 
   uploadFileInp.addEventListener('change', function () {
+    var file = uploadFileInp.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (el) {
+      return fileName.endsWith(el);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        previewUploadImg.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+    }
     openImgUpload();
   });
 
