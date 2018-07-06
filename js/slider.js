@@ -30,23 +30,21 @@
       e.preventDefault();
 
       var xCoord = e.clientX;
-      var LINE_WIDTH = effectScaleLine.offsetWidth;
+      var lineWidth = effectScaleLine.offsetWidth;
 
       var mouseMoveHandler = function (moveEvt) {
-        moveEvt.preventDefault();
 
         var shift = xCoord - moveEvt.clientX;
 
         xCoord = moveEvt.clientX;
 
         var move = effectScalePin.offsetLeft - shift;
-        if (move >= 0 && move <= LINE_WIDTH) {
+        if (move >= 0 && move <= lineWidth) {
           effectScalePin.style.left = move + 'px';
           effectScaleLevel.style.width = move + 'px';
           var effectPerc = getEffectPercent();
           effectValueInp.value = effectPerc;
           callback();
-          // window.effect.apply(effectPerc);
         }
       };
 
