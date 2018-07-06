@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
   var uploadFileInp = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
   var uploadCancelBtn = document.querySelector('.img-upload__cancel');
@@ -9,13 +11,12 @@
   var minusScaleBtn = document.querySelector('.resize__control--minus');
   var uploadPreview = document.querySelector('.img-upload__preview');
   var previewUploadImg = uploadPreview.querySelector('img');
+  var effectsPreviews = document.querySelectorAll('.effects__preview');
   var imgEffectInputs = document.querySelectorAll('.effects__radio');
   var effectScaleWrapper = document.querySelector('.img-upload__scale');
   var hashtagInp = document.querySelector('.text__hashtags');
   var commentInp = document.querySelector('.text__description');
   var form = document.querySelector('.img-upload__form');
-
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   imgEffectInputs.forEach(function (input) {
     input.addEventListener('change', function () {
@@ -78,7 +79,7 @@
     document.removeEventListener('keydown', escPressHandler);
   }
 
-  uploadFileInp.addEventListener('change', function () {
+  function insertUploadImg() {
     var file = uploadFileInp.files[0];
     var fileName = file.name.toLowerCase();
 
@@ -91,10 +92,17 @@
 
       reader.addEventListener('load', function () {
         previewUploadImg.src = reader.result;
+        [].forEach.call(effectsPreviews, function (el) {
+          el.style.backgroundImage = 'url(' + reader.result + ')';
+        });
       });
 
       reader.readAsDataURL(file);
     }
+  }
+
+  uploadFileInp.addEventListener('change', function () {
+    insertUploadImg();
     openImgUpload();
   });
 
