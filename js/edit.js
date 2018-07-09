@@ -39,8 +39,8 @@
     uploadPreview.style.transform = 'scale(' + scale / 100 + ')';
   }
 
-  function escPressHandler(e) {
-    window.assets.isEscEvent(e, closeImgUpload);
+  function escPressHandler(evt) {
+    window.assets.isEscEvent(evt, closeImgUpload);
   }
 
   function applyEffect() {
@@ -101,6 +101,11 @@
     }
   }
 
+  function sendForm() {
+    var data = new FormData(form);
+    window.backend.upload(data, closeImgUpload, window.backend.showError);
+  }
+
   uploadFileInp.addEventListener('change', function () {
     insertUploadImg();
     openImgUpload();
@@ -110,20 +115,18 @@
     closeImgUpload();
   });
 
-  plusScaleBtn.addEventListener('click', function (e) {
-    e.preventDefault();
+  plusScaleBtn.addEventListener('click', function (evt) {
+    evt.preventDefault();
     window.scale.increase(setImgScaleValue);
   });
 
-  minusScaleBtn.addEventListener('click', function (e) {
-    e.preventDefault();
+  minusScaleBtn.addEventListener('click', function (evt) {
+    evt.preventDefault();
     window.scale.decrease(setImgScaleValue);
   });
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var data = new FormData(form);
-
-    window.backend.upload(data, closeImgUpload, window.backend.showError);
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.validateUploadForm(sendForm);
   });
 })();

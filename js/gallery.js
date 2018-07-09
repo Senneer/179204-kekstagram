@@ -18,8 +18,8 @@
   }
 
   function addPreviewClickListener(link, post) {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
+    link.addEventListener('click', function (evt) {
+      evt.preventDefault();
       window.renderPost(post);
     });
   }

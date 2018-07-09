@@ -42,9 +42,9 @@
   }
 
   function generateCssProp(currentPerc) {
-    var MAX_PERC = 100;
+    var MAX_PERCENT = 100;
     var effectObj = effectListMap[window.effect.current()];
-    var val = currentPerc / MAX_PERC * effectObj.max + (1 - currentPerc / MAX_PERC) * effectObj.min;
+    var val = currentPerc / MAX_PERCENT * effectObj.max + (1 - currentPerc / MAX_PERCENT) * effectObj.min;
     return effectObj.filter + '(' + val + effectObj.unit + ')';
   }
 

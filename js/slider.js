@@ -1,13 +1,17 @@
 'use strict';
 
 (function () {
+  var DEFAULT_VALUE = 100;
+
+  var leftLimit = null;
+  var rightLimit = null;
+  var initialised = false;
+
   var scaleWrapper = document.querySelector('.scale');
   var effectScaleLine = scaleWrapper.querySelector('.scale__line');
   var effectScalePin = scaleWrapper.querySelector('.scale__pin');
   var effectScaleLevel = scaleWrapper.querySelector('.scale__level');
   var effectValueInp = document.querySelector('.scale__value');
-
-  var DEFAULT_VALUE = 100;
 
   function getValueInPercent(val, max) {
     return val * 100 / max;
@@ -26,38 +30,46 @@
   }
 
   function initSlider(callback) {
-    effectScalePin.addEventListener('mousedown', function (e) {
-      e.preventDefault();
+    if (!initialised) {
+      initialised = true;
+      effectScalePin.addEventListener('mousedown', function (mouseDownEvt) {
+        mouseDownEvt.preventDefault();
 
-      var xCoord = e.clientX;
-      var lineWidth = effectScaleLine.offsetWidth;
+        var xCoord = mouseDownEvt.clientX;
+        var lineWidth = effectScaleLine.offsetWidth;
+        leftLimit = effectScaleLine.getBoundingClientRect().left;
+        rightLimit = leftLimit + effectScaleLine.offsetWidth;
 
-      var mouseMoveHandler = function (moveEvt) {
+        var mouseMoveHandler = function (mouseMoveEvt) {
 
-        var shift = xCoord - moveEvt.clientX;
+          var shift = xCoord - mouseMoveEvt.clientX;
 
-        xCoord = moveEvt.clientX;
+          xCoord = mouseMoveEvt.clientX;
 
-        var move = effectScalePin.offsetLeft - shift;
-        if (move >= 0 && move <= lineWidth) {
-          effectScalePin.style.left = move + 'px';
-          effectScaleLevel.style.width = move + 'px';
-          var effectPerc = getEffectPercent();
-          effectValueInp.value = effectPerc;
-          callback();
-        }
-      };
+          if (xCoord > leftLimit && xCoord < rightLimit) {
+            var move = effectScalePin.offsetLeft - shift;
 
-      var mouseUpHandler = function (upEvt) {
-        upEvt.preventDefault();
+            if (move >= 0 && move <= lineWidth) {
+              effectScalePin.style.left = move + 'px';
+              effectScaleLevel.style.width = move + 'px';
+              var effectPercent = getEffectPercent();
+              effectValueInp.value = effectPercent;
+              callback();
+            }
+          }
+        };
 
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-      };
+        var mouseUpHandler = function (mouseUpEvt) {
+          mouseUpEvt.preventDefault();
 
-      document.addEventListener('mousemove', mouseMoveHandler);
-      document.addEventListener('mouseup', mouseUpHandler);
-    });
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+        };
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+      });
+    }
   }
 
   window.slider = {

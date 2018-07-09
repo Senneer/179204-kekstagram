@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var NEW_PREVIEWS_AMOUNT = 10;
   var filters = document.querySelector('.img-filters');
   var buttons = filters.querySelectorAll('.img-filters__button');
   var Filter = {
@@ -9,7 +10,7 @@
     'filter-discussed': filterByDiscuss
   };
   var DEBOUNCE_INTERVAL = 500;
-  var initArr = [];
+  var loadedPreviews = [];
 
   function addActiveClass(btn) {
     var activeClass = 'img-filters__button--active';
@@ -18,18 +19,18 @@
   }
 
   var onFilterChange = window.assets.debounce(function (btn, rebuildArr, callback) {
-    var arr = rebuildArr();
+    var sortedPreviews = rebuildArr();
     addActiveClass(btn);
-    callback(arr);
+    callback(sortedPreviews);
   }, DEBOUNCE_INTERVAL);
 
-  function showFilters(arr, callback) {
+  function showFilters(previews, callback) {
     if (!filters.classList.contains('img-filters--inactive')) {
       return false;
     }
 
     filters.classList.remove('img-filters--inactive');
-    initArr = arr;
+    loadedPreviews = previews;
 
     buttons.forEach(function (el) {
       el.addEventListener('click', function () {
@@ -42,10 +43,10 @@
   }
 
   function filterByDiscuss() {
-    var arr = initArr.slice().sort(function (a, b) {
-      var adiscussion = a.comments.length;
-      var bdiscussion = b.comments.length;
-      var discussionDiff = bdiscussion - adiscussion;
+    var previews = loadedPreviews.slice().sort(function (a, b) {
+      var aDiscussion = a.comments.length;
+      var bDiscussion = b.comments.length;
+      var discussionDiff = bDiscussion - aDiscussion;
 
       if (discussionDiff === 0) {
         discussionDiff = b.likes - a.likes;
@@ -53,19 +54,19 @@
       return discussionDiff;
     });
 
-    return arr;
+    return previews;
   }
 
   function filterByPopularity() {
-    return initArr;
+    return loadedPreviews;
   }
 
   function filterByNew() {
-    var arr = initArr.slice().sort(function () {
+    var previews = loadedPreviews.slice().sort(function () {
       return 0.5 - Math.random();
     });
 
-    return arr.slice(0, 10);
+    return previews.slice(0, NEW_PREVIEWS_AMOUNT);
   }
 
   window.filter = {
